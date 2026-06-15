@@ -4,26 +4,26 @@ import { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  // We initialize as null or use a ref-like approach to avoid mismatching server/client
-  const [darkMode, setDarkMode] = useState(true); // Hard default to dark matches script
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    // This effect handles the React state after script has already applied the class
-    if (savedTheme === "light") {
-      setDarkMode(false);
-      document.documentElement.classList.remove("dark");
-    } else {
-      // If "dark" or not set, default to dark
-      setDarkMode(true);
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    const isDark = savedTheme === "dark";
+    setDarkMode(isDark);
+    
+    if (isDark) {
       document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const newMode = !prev;
-      localStorage.setItem("theme", newMode ? "dark" : "light");
+      const themeString = newMode ? "dark" : "light";
+      localStorage.setItem("theme", themeString);
+      
       if (newMode) {
         document.documentElement.classList.add("dark");
       } else {
@@ -41,5 +41,9 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
-  return useContext(ThemeContext);
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
 }

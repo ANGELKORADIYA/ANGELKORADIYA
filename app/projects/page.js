@@ -4,6 +4,13 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 
 const projects = [
+  {
+    title: 'OmniQuery',
+    description: 'An advanced Talk2DB platform that converts Natural Language to SQL using a RAG (Retrieval-Augmented Generation) architecture. It features strict RBAC, modular provider interfaces, and dynamic workflow execution for seamless database interaction.',
+    link2: 'https://github.com/ANGELKORADIYA/OMNIQUERY',
+    category: 'RAG',
+    tags: ['TypeScript', 'RAG', 'SQL', 'GenAI']
+  },
 // ... (projects data remains the same)
   {
     title: 'Wanderlogue',
@@ -137,7 +144,7 @@ const projects = [
   },
 ];
 
-const categories = ['All', 'Web Apps', 'Gen AI' ,'AI & ML', 'Games', 'Finance', 'Systems & Tools'];
+const categories = ['All', 'RAG', 'Web Apps', 'Gen AI' ,'AI & ML', 'Games', 'Finance', 'Systems & Tools'];
 
 function ProjectIcon({ project, index }) {
   const [error, setError] = useState(false);

@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Navbar from "./navbar";
-import Footer from "./components/Footer";
 import { siteConfig } from "../lib/siteConfig";
 import { ThemeProvider } from "./components/ThemeProvider";
 import CustomCursor from "./components/CustomCursor";
@@ -59,7 +58,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -82,7 +81,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${inter.className} bg-white dark:bg-gray-900 transition-colors duration-300`}>
+      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 transition-colors duration-300`}>
         <ThemeProvider>
           <CustomCursor />
           <Navbar />
@@ -104,7 +103,6 @@ export default function RootLayout({ children }) {
           )}
 
           <main>{children}</main>
-          <Footer />
         </ThemeProvider>
 
         {/* Enhanced Structured Data (JSON-LD) */}
