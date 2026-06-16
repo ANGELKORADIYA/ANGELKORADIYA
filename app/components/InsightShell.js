@@ -124,9 +124,9 @@ const InsightShell = forwardRef((props, ref) => {
       
       if (academic) {
         output.push({ type: 'header', text: `[ACAD] ${academic.title.toUpperCase()}` });
-        output.push({ type: 'label', text: 'TIMEFRAME:', val: academic.year });
-        output.push({ type: 'label', text: 'LOCATION:', val: academic.place });
-        output.push({ type: 'label', text: 'DETAILS:', val: academic.detail });
+        output.push({ type: 'label', text: '[TIMEFRAME]:', val: academic.year });
+        output.push({ type: 'label', text: '[LOCATION]:', val: academic.place });
+        output.push({ type: 'label', text: '[DETAILS]:', val: academic.detail });
         output.push({ type: "separator" });
       } else {
         output.push({ type: 'error', text: `Academic record '${query}' not found. Try 'swe', 'btech', or '12th'.` });
@@ -146,11 +146,11 @@ const InsightShell = forwardRef((props, ref) => {
       if (project) {
         output.push({ type: 'header', text: `[PROJ] ${project.title.toUpperCase()}` });
         output.push({ type: 'label', text: '[GOAL]:', val: project.goal });
-        output.push({ type: 'label', text: 'BUILT:', val: project.built });
-        output.push({ type: 'label', text: 'STATUS:', val: project.status });
-        if (project.droppedReason) output.push({ type: 'label', text: 'REASON:', val: project.droppedReason });
-        output.push({ type: 'label', text: 'MARKET:', val: project.marketContext });
-        if (project.future) output.push({ type: 'label', text: 'FUTURE:', val: project.future });
+        output.push({ type: 'label', text: '[BUILT]:', val: project.built });
+        output.push({ type: 'label', text: '[STATUS]:', val: project.status });
+        if (project.droppedReason) output.push({ type: 'label', text: '[REASON]:', val: project.droppedReason });
+        output.push({ type: 'label', text: '[MARKET]:', val: project.marketContext });
+        if (project.future) output.push({ type: 'label', text: '[FUTURE]:', val: project.future });
         output.push({ type: "separator" });
       } else {
         output.push({ type: 'error', text: `Project '${query}' not found.` });
@@ -167,7 +167,7 @@ const InsightShell = forwardRef((props, ref) => {
       if (skill) {
         output.push({ type: 'header', text: `[SKILL] ${skill.label.toUpperCase()}` });
         output.push({ type: 'text', text: skill.desc });
-        output.push({ type: 'header', text: 'RESOURCES:' });
+        output.push({ type: 'header', text: '[RESOURCES]:' });
         skill.resources.forEach(res => {
           output.push({ type: 'link', text: res.name, url: res.link, sub: res.type });
         });
@@ -178,23 +178,23 @@ const InsightShell = forwardRef((props, ref) => {
       }
     } else if (data && data.type === 'academic') {
       output.push({ type: 'header', text: `[ACAD] ${data.title.toUpperCase()}` });
-      output.push({ type: 'label', text: 'TIMEFRAME:', val: data.year });
-      output.push({ type: 'label', text: 'LOCATION:', val: data.place });
-      output.push({ type: 'label', text: 'DETAILS:', val: data.detail });
+      output.push({ type: 'label', text: '[TIMEFRAME]:', val: data.year });
+      output.push({ type: 'label', text: '[LOCATION]:', val: data.place });
+      output.push({ type: 'label', text: '[DETAILS]:', val: data.detail });
       output.push({ type: "separator" });
     } else if (data && data.type === 'project') {
       output.push({ type: 'header', text: `[PROJ] ${data.title.toUpperCase()}` });
       output.push({ type: 'label', text: '[GOAL]:', val: data.goal });
-      output.push({ type: 'label', text: 'BUILT:', val: data.built });
-      output.push({ type: 'label', text: 'STATUS:', val: data.status });
-      if (data.droppedReason) output.push({ type: 'label', text: 'REASON:', val: data.droppedReason });
-      output.push({ type: 'label', text: 'MARKET:', val: data.marketContext });
-      if (data.future) output.push({ type: 'label', text: 'FUTURE:', val: data.future });
+      output.push({ type: 'label', text: '[BUILT]:', val: data.built });
+      output.push({ type: 'label', text: '[STATUS]:', val: data.status });
+      if (data.droppedReason) output.push({ type: 'label', text: '[REASON]:', val: data.droppedReason });
+      output.push({ type: 'label', text: '[MARKET]:', val: data.marketContext });
+      if (data.future) output.push({ type: 'label', text: '[FUTURE]:', val: data.future });
       output.push({ type: "separator" });
     } else if (data && data.type === 'skill') {
       output.push({ type: 'header', text: `[SKILL] ${data.label.toUpperCase()}` });
       output.push({ type: 'text', text: data.desc });
-      output.push({ type: 'header', text: 'RESOURCES:' });
+      output.push({ type: 'header', text: '[RESOURCES]:' });
       data.resources.forEach(res => {
         output.push({ type: 'link', text: res.name, url: res.link, sub: res.type });
       });
@@ -288,7 +288,7 @@ const InsightShell = forwardRef((props, ref) => {
             {line.type === 'header' && <div className="mt-6 mb-3 text-sky-600 dark:text-sky-400 font-black tracking-[0.1em] border-none pb-1">{line.text}</div>}
             {line.type === 'label' && (
               <div className="flex flex-col gap-1 mb-3">
-                <span className="text-gray-400 dark:text-white/20 font-black text-[9px] uppercase tracking-widest">{line.text}</span>
+                <span className="text-sky-600 dark:text-sky-400 font-black uppercase tracking-widest">{line.text}</span>
                 <span className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{line.val}</span>
               </div>
             )}

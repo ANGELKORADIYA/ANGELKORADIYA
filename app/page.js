@@ -24,6 +24,16 @@ const SectionWrapper = ({ id, children }) => (
 export default function Home() {
   const terminalRef = useRef(null);
 
+  // Handle smooth scrolling to sections
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Prevent default behavior to avoid hash stacking
+      window.history.replaceState(null, '', `#${sectionId}`);
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="bg-gray-50 dark:bg-[#020204] text-gray-900 dark:text-white min-h-screen selection:bg-sky-500/30 overflow-hidden transition-colors duration-300">
       <ScrollToTop />
@@ -44,21 +54,21 @@ export default function Home() {
                   Crafting elegant solutions with code.
                 </p>
                 <div className="mt-10 flex flex-wrap justify-start gap-4">
-                  <button 
-                    onClick={() => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' })}
-                    className="px-8 py-3 bg-sky-600 dark:bg-white text-white dark:text-gray-950 rounded-full font-bold hover:bg-sky-700 dark:hover:bg-sky-400 transition-all hover:shadow-xl hover:-translate-y-1"
+                  <button
+                    onClick={() => scrollToSection('projects')}
+                    className="px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] border border-transparent hover:border-sky-500/50 hover:text-sky-300 dark:hover:text-sky-600"
                   >
                     View Projects
                   </button>
-                  <button 
-                    onClick={() => document.getElementById('learning').scrollIntoView({ behavior: 'smooth' })}
-                    className="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold hover:bg-sky-50 dark:hover:bg-white/10 hover:border-sky-200 dark:hover:border-sky-500/30 transition-all hover:shadow-lg hover:-translate-y-1"
+                  <button
+                    onClick={() => scrollToSection('learning')}
+                    className="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-sm hover:shadow-[0_0_30px_rgba(56,189,248,0.4)] hover:border-sky-500/50 dark:hover:border-sky-400/50 hover:text-sky-600 dark:hover:text-sky-300"
                   >
                     Learning Journey
                   </button>
-                  <button 
-                    onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
-                    className="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold hover:bg-sky-50 dark:hover:bg-white/10 hover:border-sky-200 dark:hover:border-sky-500/30 transition-all hover:shadow-lg hover:-translate-y-1"
+                  <button
+                    onClick={() => scrollToSection('contact')}
+                    className="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-sm hover:shadow-[0_0_30px_rgba(56,189,248,0.4)] hover:border-sky-500/50 dark:hover:border-sky-400/50 hover:text-sky-600 dark:hover:text-sky-300"
                   >
                     Get in Touch
                   </button>
@@ -69,21 +79,33 @@ export default function Home() {
 
           <SectionWrapper id="projects">
             <div className="px-6 md:px-12 py-12">
-              <h2 className="text-5xl font-black mb-16 tracking-tighter uppercase text-gray-900 dark:text-white">Projects</h2>
+              <h2 className="text-5xl font-extrabold mb-16 tracking-wide uppercase text-gray-900 dark:text-white">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400">
+                      {'{'}Projects{'}'}
+                    </span>
+                  </h2>
               <ProjectsBento onSelect={(p) => terminalRef.current?.execute(`inspect --project ${p.id}`, { type: 'project', ...p })} />
             </div>
           </SectionWrapper>
 
           <SectionWrapper id="learning">
             <div className="px-6 md:px-12 py-12">
-              <h2 className="text-5xl font-black mb-16 tracking-tighter uppercase text-gray-900 dark:text-white">Learning</h2>
+              <h2 className="text-5xl font-extrabold mb-16 tracking-wide uppercase text-gray-900 dark:text-white">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400">
+                      {'{'}Learning{'}'}
+                    </span>
+                  </h2>
               <LearningTree onSelect={(s) => terminalRef.current?.execute(`inspect --skill ${s.id}`, { type: 'skill', ...s })} />
             </div>
           </SectionWrapper>
           
           <SectionWrapper id="contact">
             <div className="px-6 md:px-12 py-12">
-              <h2 className="text-5xl font-black mb-16 tracking-tighter uppercase text-gray-900 dark:text-white">About & Contact</h2>
+              <h2 className="text-5xl font-extrabold mb-16 tracking-wide uppercase text-gray-900 dark:text-white">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400">
+                      {'{'}About & Contact{'}'}
+                    </span>
+                  </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 
@@ -91,9 +113,11 @@ export default function Home() {
                 <div className="md:col-span-8 p-8 rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%] hover:bg-white/80 dark:hover:bg-white/10 hover:border-sky-500/30 transition-all duration-500 relative group overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/5 dark:bg-sky-500/10 rounded-full blur-[80px] -z-10 group-hover:bg-sky-500/10 dark:group-hover:bg-sky-500/20 transition-colors duration-700"></div>
                   
-                  <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3 tracking-tighter uppercase">
+                  <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center gap-3 tracking-wide uppercase">
                     <span className="w-10 h-10 bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 rounded-xl flex items-center justify-center text-lg border border-sky-200 dark:border-sky-500/30">🎓</span>
-                    Academics & Experience
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400">
+                      {'{'}Academics & Experience{'}'}
+                    </span>
                   </h2>
 
                   <div className="space-y-8 relative before:absolute before:inset-0 before:left-5 before:w-0.5 before:bg-gray-200 dark:before:bg-white/10">
@@ -128,9 +152,11 @@ export default function Home() {
                   {/* Achievements */}
                   <div className="flex-1 p-6 rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%] hover:bg-white/80 dark:hover:bg-white/10 hover:border-amber-500/30 transition-all duration-500 group relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-[40px] -z-10 group-hover:bg-amber-500/10 dark:group-hover:bg-amber-500/20 transition-colors"></div>
-                    <h2 className="text-lg font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3 tracking-tighter uppercase">
+                    <h2 className="text-lg font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-3 tracking-wide uppercase">
                       <span className="w-8 h-8 bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-lg flex items-center justify-center text-base border border-amber-200 dark:border-amber-500/30">🏆</span>
-                      Achievements
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400">
+                        {'{'}Achievements{'}'}
+                      </span>
                     </h2>
                     <div className="space-y-3">
                       <div className="p-4 bg-gray-50/50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 group-hover:border-amber-500/20 transition-colors">
@@ -146,10 +172,10 @@ export default function Home() {
 
                   {/* Hobbies */}
                   <div className="p-6 rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%] hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-500">
-                    <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 text-center">Interests</h2>
+                    <h2 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide mb-4 text-center">{'{'}Interests{'}'}</h2>
                     <div className="flex justify-center gap-6">
                       {["🎮", "✈️", "💻"].map((emoji, i) => (
-                        <div key={i} className="text-3xl hover:scale-125 hover:-translate-y-2 transition-transform cursor-help" style={{ transitionDelay: `${i * 50}ms` }}>{emoji}</div>
+                        <div key={i} className="text-3xl hover:scale-125 hover:-translate-y-2 transition-transform cursor-none" style={{ transitionDelay: `${i * 50}ms` }}>{emoji}</div>
                       ))}
                     </div>
                   </div>
@@ -158,7 +184,11 @@ export default function Home() {
                 {/* Competitive Programming */}
                 <div className="md:col-span-6 p-8 rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%] hover:bg-white/80 dark:hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-500 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-[60px] -z-10 group-hover:bg-emerald-500/10 dark:group-hover:bg-emerald-500/20 transition-colors"></div>
-                  <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 tracking-tighter uppercase">Competitive Stats</h2>
+                  <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-wide uppercase">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-400 dark:to-teal-400">
+                      {'{'}Competitive Stats{'}'}
+                    </span>
+                  </h2>
                   <div className="space-y-3">
                     {[
                       { name: "LeetCode", link: "https://leetcode.com/u/Angel_Koradiya/", logo: "https://cdn-icons-png.flaticon.com/512/3296/3296814.png" },
@@ -179,11 +209,11 @@ export default function Home() {
                 {/* Contact CTA */}
                 <div className="md:col-span-6 p-8 rounded-[2rem] border border-sky-200 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/10 backdrop-blur-[20px] saturate-[180%] flex flex-col items-center justify-center text-center relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-sky-400/10 to-indigo-600/10 dark:from-sky-400/20 dark:to-indigo-600/20 -z-10 group-hover:opacity-75 transition-opacity"></div>
-                  <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tighter uppercase">Start a Project</h2>
+                  <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-wide uppercase">{'{'}Start a Project{'}'}</h2>
                   <p className="text-sky-700 dark:text-sky-200 mb-8 max-w-sm">My inbox is always open. Let&apos;s build something amazing together.</p>
                   <button 
                     onClick={() => terminalRef.current?.execute('contact')}
-                    className="px-10 py-4 bg-gray-900 dark:bg-white text-white dark:text-sky-950 rounded-full font-black text-sm uppercase tracking-widest hover:bg-sky-600 dark:hover:bg-sky-400 hover:text-white transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(56,189,248,0.5)]"
+                    className="px-10 py-4 bg-gray-900 dark:bg-white text-white dark:text-sky-950 rounded-full font-black text-sm uppercase tracking-widest transition-all duration-300 hover:scale-105 shadow-[0_0_40px_-10px_rgba(56,189,248,0.5)] hover:shadow-[0_0_50px_-5px_rgba(56,189,248,0.8)] border border-transparent hover:border-sky-500/50 hover:text-sky-300 dark:hover:text-sky-600"
                   >
                     Initiate Contact_
                   </button>

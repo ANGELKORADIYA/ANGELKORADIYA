@@ -37,16 +37,17 @@ export const skills = [
       { name: "Full Course - Code with Harry", link: "https://youtu.be/JdG1cVFyj5A?si=5dddMwcrzMsDpRO8", type: "Video" }
     ]
   },
-  { 
-    id: "dsa", 
-    label: "DSA", 
-    x: "50%", y: "50%", 
-    icon: Zap, 
+  {
+    id: "dsa",
+    label: "DSA",
+    x: "50%", y: "50%",
+    icon: Zap,
     desc: "Core problem solving. Solved 500+ problems across various platforms.",
     resources: [
       { name: "Striver’s DSA Course", link: "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/", type: "Course" },
       { name: "LeetCode Profile", link: "https://leetcode.com/u/Angel_Koradiya/", type: "Profile" },
       { name: "Coding Ninja Profile", link: "https://www.naukri.com/code360/profile/angelkoradiya", type: "Profile" },
+      { name: "HackerRank Profile", link: "https://www.hackerrank.com/profile/koradiyaangel11", type: "Profile" },
     ]
   },
   { 
@@ -73,26 +74,29 @@ export const skills = [
       { name: "Official Documentation", link: "https://scikit-learn.org/stable/user_guide.html", type: "Doc" },
     ]
   },
-  { 
-    id: "mern", 
-    label: "MERN Stack", 
-    x: "80%", y: "100%", 
-    icon: Database, 
+  {
+    id: "mern",
+    label: "MERN Stack",
+    x: "80%", y: "100%",
+    icon: Database,
     desc: "Full-stack proficiency. Built multiple real-world applications with React and Node.js.",
     resources: [
       { name: "React - Code with Harry", link: "https://youtube.com/playlist?list=PLu0W_9lII9agx66oZnT6IyhcMIbUMNMdt&si=TZrmd5HlA8mzdOci", type: "Playlist" },
       { name: "NodeJS - Code with Harry", link: "https://youtu.be/BLl32FvcdVM?si=bfDtDlzQqu7QIiJk", type: "Video" },
+      { name: "Express - Code with Harry", link: "https://youtu.be/7H_QH9nipNs?si=AM3w22bk2Ru7c6LQ", type: "Video" },
+      { name: "MongoDB - Code with Harry", link: "https://youtu.be/J6mDkcqU_ZE?si=xrdsrVDYYCEEPAy8", type: "Video" },
     ]
   },
-  { 
-    id: "genai", 
-    label: "Generative AI", 
-    x: "20%", y: "100%", 
-    icon: Sparkles, 
+  {
+    id: "genai",
+    label: "Generative AI",
+    x: "20%", y: "100%",
+    icon: Sparkles,
     desc: "Current frontier. Exploring LLMs, RAG, and AI-driven automation.",
     resources: [
       { name: "Intro by Google Cloud", link: "https://www.cloudskillsboost.google/course_templates/536", type: "Course" },
       { name: "Leader Certification Course", link: "https://youtu.be/30diF8dKpAY?si=Jv6yk0PAORCMgO9u", type: "Video" },
+      { name: "Hugging Face Transformers", link: "https://huggingface.co/transformers/", type: "Doc" },
     ]
   }
 ];
