@@ -11,11 +11,11 @@ import { useRef } from "react";
 const SectionWrapper = ({ id, children }) => (
   <motion.section
     id={id}
-    initial={{ opacity: 0, y: 50, rotateX: 10 }}
-    whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, ease: "easeOut" }}
-    className="min-h-screen py-24 relative perspective-[1000px]"
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className="min-h-screen py-24 relative"
   >
     {children}
   </motion.section>
