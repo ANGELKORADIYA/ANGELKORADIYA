@@ -1,8 +1,8 @@
 "use client";
 import { useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { Terminal } from "lucide-react";
+import { Terminal, ExternalLink } from "lucide-react";
 import { useHackerHud } from "./HackerHudContext";
 
 export const projects = [
@@ -298,9 +298,9 @@ function ProjectIcon({ project, index }) {
 
   if (!project.logo || error) {
     return (
-      <div 
-        className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300 bg-gray-50 dark:bg-white/10 backdrop-blur-md"
-        style={{ background: !project.logo ? gradient : undefined }}
+      <div
+        className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md border border-white/10 transition-transform duration-300 group-hover:scale-110"
+        style={{ background: gradient }}
       >
         {initials}
       </div>
@@ -308,12 +308,12 @@ function ProjectIcon({ project, index }) {
   }
 
   return (
-    <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm overflow-hidden bg-gray-50 dark:bg-white/10 backdrop-blur-md border border-gray-100 dark:border-white/10 transition-all duration-300 relative group-hover:bg-sky-100 dark:group-hover:bg-sky-500/20">
+    <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden bg-white/80 dark:bg-white/10 border border-gray-200/80 dark:border-white/10 transition-all duration-300 relative group-hover:scale-110 group-hover:border-sky-400/40">
       <Image
         src={project.logo}
         alt={`${project.title} logo`}
         fill
-        className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"
+        className="object-contain p-1.5"
         onError={() => setError(true)}
         unoptimized={project.logo.endsWith('.svg') || project.logo.endsWith('.ico')}
       />
@@ -324,57 +324,88 @@ function ProjectIcon({ project, index }) {
 function ProjectCard({ p, index, isFeatured, onSelect }) {
   const { showHud, hideHud } = useHackerHud();
   const cardRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
 
-  const handleMouseEnter = useCallback(() => {
+  // 3D tilt motion values
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [6, -6]), { stiffness: 200, damping: 20 });
+  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-6, 6]), { stiffness: 200, damping: 20 });
+
+  const handlePointerMove = useCallback((e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    cardRef.current.style.setProperty("--mx", `${x * 100}%`);
+    cardRef.current.style.setProperty("--my", `${y * 100}%`);
+    // Skip 3D tilt when user prefers reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    mouseX.set(x);
+    mouseY.set(y);
+  }, [mouseX, mouseY]);
+
+  const handleMouseEnter = useCallback((e) => {
+    setIsHovering(true);
     if (cardRef.current) {
       showHud(cardRef.current, { type: "project", ...p });
-      cardRef.current.classList.remove("hud-glitch");
-      void cardRef.current.offsetWidth;
-      cardRef.current.classList.add("hud-glitch");
     }
-  }, [p, showHud]);
+    handlePointerMove(e);
+  }, [p, showHud, handlePointerMove]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
     hideHud();
-    if (cardRef.current) {
-      cardRef.current.classList.remove("hud-glitch");
-    }
-  }, [hideHud]);
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  }, [hideHud, mouseX, mouseY]);
+
+  const statusStyles = {
+    Active: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-400/30",
+    Completed: "bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-400/30",
+    Dropped: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-400/30",
+    Archived: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-400/30",
+  };
 
   return (
     <motion.div
       ref={cardRef}
-      key={p.id}
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, scale: 0.94, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.94, y: 8 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        perspective: 1000,
+      }}
       onClick={() => onSelect?.(p)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onPointerMove={handlePointerMove}
       onFocus={() => {
         if (cardRef.current) showHud(cardRef.current, { type: "project", ...p });
       }}
-      onBlur={() => {
-        hideHud();
-      }}
+      onBlur={() => hideHud()}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onSelect?.(p);
         }
       }}
       className={`
-        relative p-8 rounded-[2rem] border border-gray-200 dark:border-white/10
-        bg-white/60 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%]
-        transition-all duration-500 cursor-pointer overflow-hidden group flex flex-col h-full
+        relative p-6 md:p-7 rounded-3xl border border-gray-200/80 dark:border-white/10
+        bg-white/70 dark:bg-white/[0.04] backdrop-blur-xl
+        transition-colors duration-300 cursor-pointer overflow-hidden group flex flex-col h-full
         hud-card-hover
-        ${isFeatured ? "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-sky-500/5 to-indigo-500/5 dark:from-sky-500/5 dark:to-indigo-500/5" : "col-span-1"}
-        hover:bg-white dark:hover:bg-white/10 hover:border-sky-300 dark:hover:border-sky-500/30 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-sky-500/10
-        focus:outline-none focus:ring-2 focus:ring-sky-500/50
+        ${isFeatured ? "md:col-span-2 lg:col-span-2" : "col-span-1"}
+        hover:border-sky-400/50 dark:hover:border-sky-400/40
+        hover:shadow-[0_20px_50px_-20px_rgba(56,189,248,0.35)]
+        focus:outline-none focus:ring-2 focus:ring-sky-500/40
       `}
     >
       {/* Corner brackets for hacker HUD */}
@@ -383,45 +414,86 @@ function ProjectCard({ p, index, isFeatured, onSelect }) {
       <span className="hud-card-bracket hud-card-bracket-bl" />
       <span className="hud-card-bracket hud-card-bracket-br" />
 
-      {/* Status Pill */}
-      <div className={`absolute top-6 right-6 text-[8px] font-black uppercase px-2.5 py-1 rounded-full border ${
-        p.status === 'Active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' :
-        p.status === 'Dropped' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20' :
-        'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-white/40 border-gray-200 dark:border-white/10'
-      }`}>
-        {p.status}
-      </div>
+      {/* Top accent bar */}
+      <div
+        className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-sky-500 to-transparent transition-opacity duration-300 ${
+          isHovering ? "opacity-100" : "opacity-40"
+        }`}
+      />
 
-      <div className="relative h-full flex flex-col flex-grow">
-        {/* Header with icon and title */}
-        <div className="flex items-center gap-4 mb-4">
-          <ProjectIcon project={p} index={index} />
-          <h3 className={`font-black text-gray-900 dark:text-white tracking-tighter ${isFeatured ? "text-3xl" : "text-xl"}`}>{p.title}</h3>
+      {/* Mouse-tracking spotlight glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background:
+            "radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(56,189,248,0.16), transparent 55%)",
+        }}
+      />
+
+      {/* Soft ambient blob */}
+      <div
+        aria-hidden
+        className={`absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${
+          isHovering ? "opacity-40" : "opacity-0"
+        } bg-sky-500/30`}
+      />
+
+      <div className="relative z-10 h-full flex flex-col flex-grow">
+        {/* Top row: icon + category | status */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <ProjectIcon project={p} index={index} />
+            <span className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.14em] bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+              {p.category}
+            </span>
+          </div>
+          <div
+            className={`shrink-0 text-[8px] font-black uppercase px-2.5 py-1 rounded-full border tracking-widest ${
+              statusStyles[p.status] || statusStyles.Completed
+            }`}
+          >
+            {p.status}
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {p.tags?.map(tag => (
-            <span key={tag} className="text-[9px] font-bold text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/5">
+        {/* Title */}
+        <h3
+          className={`font-black text-gray-900 dark:text-white tracking-tight leading-tight mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors ${
+            isFeatured ? "text-2xl md:text-3xl" : "text-xl"
+          }`}
+        >
+          {p.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4 flex-grow line-clamp-4">
+          {p.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {p.tags?.slice(0, isFeatured ? 6 : 4).map((tag) => (
+            <span
+              key={tag}
+              className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 bg-gray-100/80 dark:bg-white/5 px-2 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 group-hover:border-sky-400/30 group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors"
+            >
               #{tag}
             </span>
           ))}
-          <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-full text-[9px] font-black uppercase tracking-wider border border-sky-200 dark:border-sky-500/20 ml-auto">
-            {p.category}
-          </span>
         </div>
 
-        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6 flex-grow">{p.description}</p>
-
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100 dark:border-white/5">
+        <div className="flex items-center gap-2.5 mt-auto pt-4 border-t border-gray-100 dark:border-white/10">
           {p.link && (
             <a
               href={p.link}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sky-700 transition-all shadow-lg shadow-sky-500/20 active:scale-95 demo-btn"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-sky-600 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sky-500 transition-all shadow-lg shadow-sky-500/25 active:scale-95 demo-btn"
             >
+              <ExternalLink size={12} />
               Demo
             </a>
           )}
@@ -431,17 +503,26 @@ function ProjectCard({ p, index, isFeatured, onSelect }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className={`${p.link ? 'px-3' : 'flex-1'} inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 border border-gray-200 dark:border-white/10`}
+              className={`${p.link ? "px-3.5" : "flex-1"} inline-flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/15 transition-all active:scale-95 border border-gray-200 dark:border-white/10`}
             >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+              </svg>
               Code
             </a>
           )}
           <button
-            onClick={(e) => { e.stopPropagation(); onSelect(p); }}
-            className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all group/inspect"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(p);
+            }}
+            className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all group/inspect"
             title="Inspect in Terminal"
           >
-            <Terminal size={14} className="text-gray-400 dark:text-white/40 group-hover/inspect:text-sky-600 dark:group-hover/inspect:text-sky-400" />
+            <Terminal
+              size={14}
+              className="text-gray-400 dark:text-white/40 group-hover/inspect:text-sky-600 dark:group-hover/inspect:text-sky-400"
+            />
           </button>
         </div>
       </div>
