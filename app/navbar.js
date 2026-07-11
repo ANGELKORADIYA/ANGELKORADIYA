@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { useTheme } from "./components/ThemeProvider";
-import { Sun, Moon, ArrowDown, Home, Briefcase, GraduationCap, Mail } from "lucide-react";
+import { Sun, Moon, ArrowDown, Home, Briefcase, GraduationCap, Mail, Terminal } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const navLinks = [
@@ -19,7 +19,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { darkMode, toggleDarkMode } = useTheme();
+  const { theme, darkMode, toggleDarkMode } = useTheme();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("Home");
   const [resumeLink, setResumeLink] = useState(
@@ -168,9 +168,15 @@ export default function Navbar() {
           <button
             onClick={toggleDarkMode}
             className="p-2.5 rounded-xl text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
-            aria-label="Toggle dark mode"
+            aria-label="Toggle theme mode"
           >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === "hacker" ? (
+              <Terminal size={20} className="text-emerald-400" />
+            ) : darkMode ? (
+              <Sun size={20} />
+            ) : (
+              <Moon size={20} />
+            )}
           </button>
 
           <a

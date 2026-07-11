@@ -142,7 +142,7 @@ function DecryptField({ label, value, active, delay, textColor, dimColor }) {
   );
 }
 
-function LoadingBar({ percent, active, darkMode, dimColor, threatGradient, accentColor }) {
+function LoadingBar({ percent, active, isHacker, darkMode, dimColor, threatGradient, accentColor }) {
   const barsCount = 20;
   const filledBars = Math.round((percent / 100) * barsCount);
   const isComplete = percent === 100;
@@ -162,7 +162,7 @@ function LoadingBar({ percent, active, darkMode, dimColor, threatGradient, accen
         }}
       >
         <span>DECRYPT STREAM // STATUS</span>
-        <span style={{ color: isComplete ? (darkMode ? "#38bdf8" : "#0284c7") : active ? accentColor : dimColor, fontWeight: 700 }}>
+        <span style={{ color: isComplete ? (isHacker ? "#3dffa0" : darkMode ? "#38bdf8" : "#0284c7") : active ? accentColor : dimColor, fontWeight: 700 }}>
           {isComplete ? "[COMPLETE]" : active ? "[DECODING...]" : "[STANDBY]"} {percent}%
         </span>
       </div>
@@ -172,10 +172,10 @@ function LoadingBar({ percent, active, darkMode, dimColor, threatGradient, accen
           display: "flex",
           gap: 2,
           height: 8,
-          background: darkMode ? "rgba(15, 23, 42, 0.8)" : "rgba(226, 232, 240, 0.8)",
+          background: isHacker ? "rgba(10, 26, 16, 0.85)" : darkMode ? "rgba(15, 23, 42, 0.8)" : "rgba(226, 232, 240, 0.8)",
           padding: 2,
           borderRadius: 2,
-          border: `1px solid ${darkMode ? "rgba(56, 189, 248, 0.2)" : "rgba(2, 132, 199, 0.2)"}`,
+          border: `1px solid ${isHacker ? "rgba(61, 255, 160, 0.25)" : darkMode ? "rgba(56, 189, 248, 0.2)" : "rgba(2, 132, 199, 0.2)"}`,
         }}
       >
         {Array.from({ length: barsCount }).map((_, i) => {
@@ -206,7 +206,8 @@ const MARGIN = 16;
 
 export default function HackerHUD() {
   const { activeData, activeElement } = useHackerHud();
-  const { darkMode } = useTheme();
+  const { theme, darkMode } = useTheme();
+  const isHacker = theme === "hacker";
   const svgRef = useRef(null);
   const popupRef = useRef(null);
   const [positions, setPositions] = useState(null);
@@ -338,7 +339,11 @@ export default function HackerHUD() {
   if (!hasHover) return null;
   if (!positions || !hudData) return null;
 
-  const statusColor = darkMode
+  const statusColor = isHacker
+    ? hudData.statusClass === "active" ? "#3dffa0"
+      : hudData.statusClass === "compromised" ? "#ff5c5c"
+      : "#ffbb55"
+    : darkMode
     ? hudData.statusClass === "active" ? "#38bdf8"
       : hudData.statusClass === "compromised" ? "#f43f5e"
       : "#f59e0b"
@@ -346,12 +351,14 @@ export default function HackerHUD() {
       : hudData.statusClass === "compromised" ? "#e11d48"
       : "#d97706";
 
-  const accentColor = darkMode ? "#38bdf8" : "#0284c7";
-  const bgColor = darkMode ? "rgba(2, 6, 23, 0.95)" : "rgba(255, 255, 255, 0.92)";
-  const borderColor = darkMode ? "rgba(56, 189, 248, 0.35)" : "rgba(2, 132, 199, 0.25)";
-  const textColor = darkMode ? "#f8fafc" : "#0f172a";
-  const dimColor = darkMode ? "#64748b" : "#64748b";
-  const threatGradient = darkMode
+  const accentColor = isHacker ? "#3dffa0" : darkMode ? "#38bdf8" : "#0284c7";
+  const bgColor = isHacker ? "rgba(10, 26, 16, 0.96)" : darkMode ? "rgba(2, 6, 23, 0.95)" : "rgba(255, 255, 255, 0.92)";
+  const borderColor = isHacker ? "rgba(61, 255, 160, 0.45)" : darkMode ? "rgba(56, 189, 248, 0.35)" : "rgba(2, 132, 199, 0.25)";
+  const textColor = isHacker ? "#c8ffdd" : darkMode ? "#f8fafc" : "#0f172a";
+  const dimColor = isHacker ? "#4f6e58" : darkMode ? "#64748b" : "#64748b";
+  const threatGradient = isHacker
+    ? "linear-gradient(90deg, #79f2a3, #3dffa0)"
+    : darkMode
     ? "linear-gradient(90deg, #38bdf8, #6366f1)"
     : "linear-gradient(90deg, #0284c7, #4f46e5)";
 
@@ -373,7 +380,11 @@ export default function HackerHUD() {
           width: "100%",
           height: "100%",
           overflow: "visible",
-          filter: darkMode ? "drop-shadow(0 0 6px rgba(56,189,248,0.8))" : "drop-shadow(0 0 4px rgba(2,132,199,0.5))",
+          filter: isHacker
+            ? "drop-shadow(0 0 6px rgba(61,255,160,0.8))"
+            : darkMode
+            ? "drop-shadow(0 0 6px rgba(56,189,248,0.8))"
+            : "drop-shadow(0 0 4px rgba(2,132,199,0.5))",
         }}
       >
         {/* Connector path */}
@@ -534,6 +545,7 @@ export default function HackerHUD() {
         <LoadingBar
           percent={decryptPercent}
           active={isVisible}
+          isHacker={isHacker}
           darkMode={darkMode}
           dimColor={dimColor}
           threatGradient={threatGradient}

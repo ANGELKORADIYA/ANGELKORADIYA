@@ -138,4 +138,119 @@
   }
 }
 
+/* ---- Global Hacker / Green Theme Mode (Matches a.html exactly across all components) ---- */
+html.hacker, html.hacker body {
+  background-color: #070a08 !important;
+  background-image: radial-gradient(ellipse 80% 60% at 50% -10%, #0f1f14 0%, transparent 60%) !important;
+  color: #79f2a3 !important;
+  font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace !important;
+}
+
+html.hacker body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* Headings and gradient text in Hacker Mode */
+html.hacker h1, html.hacker h2, html.hacker h3, html.hacker h4 {
+  color: #c8ffdd !important;
+  text-shadow: 0 0 15px rgba(61, 255, 160, 0.25) !important;
+}
+
+html.hacker .bg-clip-text {
+  background-image: none !important;
+  color: #3dffa0 !important;
+  text-shadow: 0 0 18px rgba(61, 255, 160, 0.4) !important;
+}
+
+/* Cards, Bento boxes, and sections in Hacker Mode */
+html.hacker [class*="bg-white/"], html.hacker [class*="dark:bg-white/"], html.hacker [class*="bg-slate-"], html.hacker [class*="bg-gray-"] {
+  background-color: #0c130e !important;
+  border-color: #1c3320 !important;
+  color: #79f2a3 !important;
+}
+
+/* Hovered cards in Hacker Mode */
+html.hacker [class*="hover:border-"]:hover, html.hacker .group:hover, html.hacker .hud-card-hover:hover {
+  border-color: #3dffa0 !important;
+  box-shadow: 0 0 0 1px rgba(61, 255, 160, 0.15), 0 0 24px rgba(61, 255, 160, 0.15) !important;
+}
+
+/* Text adjustments in Hacker Mode */
+html.hacker .text-gray-500, html.hacker .text-gray-600, html.hacker .text-gray-400, html.hacker .text-slate-400, html.hacker [class*="dark:text-gray-"] {
+  color: #4f6e58 !important;
+}
+
+html.hacker .text-sky-600, html.hacker .text-sky-500, html.hacker .text-sky-400, html.hacker .text-indigo-600, html.hacker [class*="dark:text-sky-"] {
+  color: #3dffa0 !important;
+}
+
+/* Demo Button only transformed to Hacker Green in Hacker Mode */
+html.hacker .demo-btn {
+  background-color: #10b981 !important;
+  color: #070a08 !important;
+  border-color: #3dffa0 !important;
+  box-shadow: 0 0 15px rgba(61, 255, 160, 0.4) !important;
+}
+
+html.hacker .demo-btn:hover {
+  background-color: #059669 !important;
+  color: #c8ffdd !important;
+  border-color: #3dffa0 !important;
+  box-shadow: 0 0 25px rgba(61, 255, 160, 0.6) !important;
+}
+
+/* Navbar in Hacker Mode */
+html.hacker div[class*="fixed top-6"] {
+  background-color: rgba(12, 19, 14, 0.85) !important;
+  border-color: #1c3320 !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* InsightShell and Terminal in Hacker Mode */
+html.hacker .border-cyan-400\/20, html.hacker .border-white\/10 {
+  border-color: #1c3320 !important;
+}
+html.hacker .text-cyan-300, html.hacker .text-cyan-200, html.hacker .text-cyan-100, html.hacker .text-cyan-400 {
+  color: #3dffa0 !important;
+}
+
+/* Cyberpunk popup entrance in Hacker Mode */
+@keyframes hud-popup-open-hacker {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.01) scaleX(0.65) translateY(12px);
+    filter: brightness(2.2) drop-shadow(0 0 18px rgba(61, 255, 160, 0.9));
+  }
+  35% {
+    opacity: 1;
+    transform: scaleY(0.04) scaleX(1.04) translateY(0px);
+    filter: brightness(2.6) drop-shadow(0 0 25px rgba(61, 255, 160, 1));
+  }
+  68% {
+    opacity: 1;
+    transform: scaleY(1.04) scaleX(0.98) skewX(1.5deg);
+    filter: brightness(1.3) drop-shadow(0 0 12px rgba(61, 255, 160, 0.5));
+  }
+  85% {
+    opacity: 1;
+    transform: scaleY(0.99) scaleX(1.01) skewX(-0.8deg);
+    filter: brightness(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) skewX(0deg);
+    filter: brightness(1);
+  }
+}
+
+html.hacker .hud-popup-anim {
+  animation: hud-popup-open-hacker 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 

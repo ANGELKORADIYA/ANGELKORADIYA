@@ -6,17 +6,23 @@ import InsightShell from "./InsightShell";
 
 const TerminalFAB = forwardRef((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingCommand, setPendingCommand] = useState(null);
   const panelRef = useRef(null);
   const fabRef = useRef(null);
   const insightRef = useRef(null);
 
-  // Always forward execute to InsightShell — same as original sidebar behavior.
-  // Clicking a project/skill always updates the terminal data regardless of open/closed state.
+  // Forward execute to InsightShell and automatically open the panel on click.
+  // Stores pendingCommand so that if the panel was closed and InsightShell hasn't mounted yet,
+  // it will execute immediately right after mounting!
   useEffect(() => {
     if (ref) {
       const handler = {
         execute: (command, data) => {
-          insightRef.current?.execute(command, data);
+          setPendingCommand({ command, data });
+          setIsOpen(true);
+          if (insightRef.current) {
+            insightRef.current.execute(command, data);
+          }
         },
       };
 
@@ -27,6 +33,18 @@ const TerminalFAB = forwardRef((props, ref) => {
       }
     }
   }, [ref]);
+
+  useEffect(() => {
+    if (isOpen && pendingCommand && insightRef.current) {
+      const t = setTimeout(() => {
+        if (insightRef.current && pendingCommand) {
+          insightRef.current.execute(pendingCommand.command, pendingCommand.data);
+          setPendingCommand(null);
+        }
+      }, 40);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen, pendingCommand]);
 
   // Close on Escape
   useEffect(() => {
