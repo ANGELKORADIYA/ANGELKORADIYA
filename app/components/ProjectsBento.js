@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Terminal } from "lucide-react";
+import { useHackerHud } from "./HackerHudContext";
 
 export const projects = [
   {
@@ -320,6 +321,134 @@ function ProjectIcon({ project, index }) {
   );
 }
 
+function ProjectCard({ p, index, isFeatured, onSelect }) {
+  const { showHud, hideHud } = useHackerHud();
+  const cardRef = useRef(null);
+
+  const handleMouseEnter = useCallback(() => {
+    if (cardRef.current) {
+      showHud(cardRef.current, { type: "project", ...p });
+      cardRef.current.classList.remove("hud-glitch");
+      void cardRef.current.offsetWidth;
+      cardRef.current.classList.add("hud-glitch");
+    }
+  }, [p, showHud]);
+
+  const handleMouseLeave = useCallback(() => {
+    hideHud();
+    if (cardRef.current) {
+      cardRef.current.classList.remove("hud-glitch");
+    }
+  }, [hideHud]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      key={p.id}
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.3 }}
+      onClick={() => onSelect?.(p)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={() => {
+        if (cardRef.current) showHud(cardRef.current, { type: "project", ...p });
+      }}
+      onBlur={() => {
+        hideHud();
+      }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect?.(p);
+        }
+      }}
+      className={`
+        relative p-8 rounded-[2rem] border border-gray-200 dark:border-white/10
+        bg-white/60 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%]
+        transition-all duration-500 cursor-pointer overflow-hidden group flex flex-col h-full
+        hud-card-hover
+        ${isFeatured ? "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-sky-500/5 to-indigo-500/5 dark:from-sky-500/5 dark:to-indigo-500/5" : "col-span-1"}
+        hover:bg-white dark:hover:bg-white/10 hover:border-sky-300 dark:hover:border-sky-500/30 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-sky-500/10
+        focus:outline-none focus:ring-2 focus:ring-sky-500/50
+      `}
+    >
+      {/* Corner brackets for hacker HUD */}
+      <span className="hud-card-bracket hud-card-bracket-tl" />
+      <span className="hud-card-bracket hud-card-bracket-tr" />
+      <span className="hud-card-bracket hud-card-bracket-bl" />
+      <span className="hud-card-bracket hud-card-bracket-br" />
+
+      {/* Status Pill */}
+      <div className={`absolute top-6 right-6 text-[8px] font-black uppercase px-2.5 py-1 rounded-full border ${
+        p.status === 'Active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' :
+        p.status === 'Dropped' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20' :
+        'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-white/40 border-gray-200 dark:border-white/10'
+      }`}>
+        {p.status}
+      </div>
+
+      <div className="relative h-full flex flex-col flex-grow">
+        {/* Header with icon and title */}
+        <div className="flex items-center gap-4 mb-4">
+          <ProjectIcon project={p} index={index} />
+          <h3 className={`font-black text-gray-900 dark:text-white tracking-tighter ${isFeatured ? "text-3xl" : "text-xl"}`}>{p.title}</h3>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {p.tags?.map(tag => (
+            <span key={tag} className="text-[9px] font-bold text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/5">
+              #{tag}
+            </span>
+          ))}
+          <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-full text-[9px] font-black uppercase tracking-wider border border-sky-200 dark:border-sky-500/20 ml-auto">
+            {p.category}
+          </span>
+        </div>
+
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6 flex-grow">{p.description}</p>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100 dark:border-white/5">
+          {p.link && (
+            <a
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sky-700 transition-all shadow-lg shadow-sky-500/20 active:scale-95"
+            >
+              Demo
+            </a>
+          )}
+          {p.link2 && (
+            <a
+              href={p.link2}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className={`${p.link ? 'px-3' : 'flex-1'} inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 border border-gray-200 dark:border-white/10`}
+            >
+              Code
+            </a>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onSelect(p); }}
+            className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all group/inspect"
+            title="Inspect in Terminal"
+          >
+            <Terminal size={14} className="text-gray-400 dark:text-white/40 group-hover/inspect:text-sky-600 dark:group-hover/inspect:text-sky-400" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ProjectsBento({ onSelect }) {
   const [filter, setFilter] = useState('All');
   
@@ -358,97 +487,15 @@ export default function ProjectsBento({ onSelect }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((p, index) => {
-            const isFeatured = index === 0 && filter === 'All'; // Only feature first item when viewing all
-            
+            const isFeatured = index === 0 && filter === 'All';
             return (
-              <motion.div
+              <ProjectCard
                 key={p.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => onSelect(p)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onSelect(p);
-                  }
-                }}
-                className={`
-                  relative p-8 rounded-[2rem] border border-gray-200 dark:border-white/10 
-                  bg-white/60 dark:bg-white/5 backdrop-blur-[20px] saturate-[180%]
-                  transition-all duration-500 cursor-pointer overflow-hidden group flex flex-col h-full
-                  ${isFeatured ? "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-sky-500/5 to-indigo-500/5 dark:from-sky-500/5 dark:to-indigo-500/5" : "col-span-1"}
-                  hover:bg-white dark:hover:bg-white/10 hover:border-sky-300 dark:hover:border-sky-500/30 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-sky-500/10
-                  focus:outline-none focus:ring-2 focus:ring-sky-500/50
-                `}
-              >
-                {/* Status Pill */}
-                <div className={`absolute top-6 right-6 text-[8px] font-black uppercase px-2.5 py-1 rounded-full border ${
-                  p.status === 'Active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' :
-                  p.status === 'Dropped' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20' :
-                  'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-white/40 border-gray-200 dark:border-white/10'
-                }`}>
-                  {p.status}
-                </div>
-
-                <div className="relative h-full flex flex-col flex-grow">
-                  {/* Header with icon and title */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <ProjectIcon project={p} index={index} />
-                    <h3 className={`font-black text-gray-900 dark:text-white tracking-tighter ${isFeatured ? "text-3xl" : "text-xl"}`}>{p.title}</h3>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {p.tags?.map(tag => (
-                      <span key={tag} className="text-[9px] font-bold text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/5">
-                        #{tag}
-                      </span>
-                    ))}
-                    <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-full text-[9px] font-black uppercase tracking-wider border border-sky-200 dark:border-sky-500/20 ml-auto">
-                      {p.category}
-                    </span>
-                  </div>
-
-                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6 flex-grow">{p.description}</p>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100 dark:border-white/5">
-                    {p.link && (
-                      <a 
-                        href={p.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex-1 inline-flex items-center justify-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sky-700 transition-all shadow-lg shadow-sky-500/20 active:scale-95"
-                      >
-                        Demo
-                      </a>
-                    )}
-                    {p.link2 && (
-                      <a 
-                        href={p.link2} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        onClick={(e) => e.stopPropagation()}
-                        className={`${p.link ? 'px-3' : 'flex-1'} inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 border border-gray-200 dark:border-white/10`}
-                      >
-                        Code
-                      </a>
-                    )}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onSelect(p); }}
-                      className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 hover:border-sky-300 dark:hover:border-sky-500/50 transition-all group/inspect"
-                      title="Inspect in Terminal"
-                    >
-                      <Terminal size={14} className="text-gray-400 dark:text-white/40 group-hover/inspect:text-sky-600 dark:group-hover/inspect:text-sky-400" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
+                p={p}
+                index={index}
+                isFeatured={isFeatured}
+                onSelect={onSelect}
+              />
             );
           })}
         </AnimatePresence>

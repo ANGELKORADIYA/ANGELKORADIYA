@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Database, Terminal, Cpu, Play, Book, GraduationCap, ExternalLink, X, Zap, Globe, Brain, Sparkles } from "lucide-react";
+import { useHackerHud } from "./HackerHudContext";
 
 export const skills = [
   { 
@@ -101,6 +102,56 @@ export const skills = [
   }
 ];
 
+function SkillNode({ skill, isHovered, onHover, onLeave, onClick }) {
+  const { showHud, hideHud } = useHackerHud();
+  const nodeRef = useRef(null);
+  const Icon = skill.icon;
+
+  const handleMouseEnter = useCallback(() => {
+    onHover();
+    if (nodeRef.current) {
+      showHud(nodeRef.current, { type: "skill", ...skill });
+    }
+  }, [skill, showHud, onHover]);
+
+  const handleMouseLeave = useCallback(() => {
+    onLeave();
+    hideHud();
+  }, [hideHud, onLeave]);
+
+  return (
+    <motion.div
+      ref={nodeRef}
+      className="absolute -translate-x-1/2 -translate-y-1/2 outline-none flex flex-col items-center"
+      style={{
+        left: skill.x,
+        top: `calc(${skill.y} * 0.75 + 10%)`,
+        zIndex: isHovered ? 50 : 10,
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      onFocus={() => { onHover(); if (nodeRef.current) showHud(nodeRef.current, { type: "skill", ...skill }); }}
+      onBlur={() => { onLeave(); hideHud(); }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
+      aria-label={skill.label}
+    >
+      <div className={`
+        w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center cursor-pointer shadow-2xl
+        transition-all duration-300 relative border-2
+        ${isHovered ? "bg-sky-500 border-sky-400 text-white scale-110 shadow-sky-500/50" : "bg-white dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-600 dark:text-gray-300 backdrop-blur-md shadow-xl dark:shadow-none"}
+      `}>
+        <Icon size={24} />
+      </div>
+      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 whitespace-nowrap text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-white dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/10 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full shadow-sm dark:shadow-none">
+        {skill.label}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function LearningTree({ onSelect }) {
   const [activeSkill, setActiveSkill] = useState(null);
 
@@ -129,42 +180,16 @@ export default function LearningTree({ onSelect }) {
 
       {/* Nodes */}
       {skills.map((skill) => {
-        const Icon = skill.icon;
         const isHovered = activeSkill === skill.id;
-        
         return (
-          <motion.div
+          <SkillNode
             key={skill.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2 outline-none flex flex-col items-center"
-            style={{ 
-              left: skill.x, 
-              top: `calc(${skill.y} * 0.75 + 10%)`, 
-              zIndex: isHovered ? 50 : 10 
-            }}
-            onMouseEnter={() => setActiveSkill(skill.id)}
-            onMouseLeave={() => setActiveSkill(null)}
+            skill={skill}
+            isHovered={isHovered}
+            onHover={() => setActiveSkill(skill.id)}
+            onLeave={() => setActiveSkill(null)}
             onClick={() => onSelect(skill)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelect(skill);
-              }
-            }}
-            aria-label={skill.label}
-          >
-            <div className={`
-              w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center cursor-pointer shadow-2xl
-              transition-all duration-300 relative border-2
-              ${isHovered ? "bg-sky-500 border-sky-400 text-white scale-110 shadow-sky-500/50" : "bg-white dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-600 dark:text-gray-300 backdrop-blur-md shadow-xl dark:shadow-none"}
-            `}>
-              <Icon size={24} />
-            </div>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 whitespace-nowrap text-[9px] md:text-[10px] font-black uppercase tracking-widest bg-white dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/10 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full shadow-sm dark:shadow-none">
-              {skill.label}
-            </div>
-          </motion.div>
+          />
         );
       })}
     </div>
