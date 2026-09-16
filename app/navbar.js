@@ -23,7 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("Home");
   const [resumeLink, setResumeLink] = useState(
-    "https://drive.google.com/file/d/1Gf50InLEBiNJkIC--SGDJu1rFB0A-Vok/view?usp=sharing"
+    "https://drive.google.com/file/d/1t5niHFSmDiuqqELTHdw2UFZkFf-8vnnx/view?usp=sharing"
   );
 
   // Update active tab and URL hash on scroll

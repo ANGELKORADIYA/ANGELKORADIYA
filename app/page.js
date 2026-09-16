@@ -100,25 +100,25 @@ function HomeContent() {
 
   const academics = [
     {
-      id: "swe",
-      year: "2025-Present",
-      title: "Software Engineer",
-      place: "Silvertouch Technology",
-      detail: "6 months internship + Full-time Position",
+      id: "silvertouch",
+      year: "Jan 2025 - Aug 2026",
+      title: "AI/ML Engineer (GenAI & Full-Stack)",
+      place: "SilverTouch Technologies Ltd.",
+      detail: "Engineered production GenAI systems, scalable RAG architectures & cloud backends",
     },
     {
       id: "btech",
       year: "2021-2025",
-      title: "B.Tech in Computer Engineering",
+      title: "B.E. in Computer Engineering",
       place: "VGEC, Ahmedabad",
-      detail: "CPI: 8 | GATE Qualified (First Attempt)",
+      detail: "CGPA: 8.01 / 10.0 | GATE 2025 Qualified (First Attempt)",
     },
     {
       id: "12th",
       year: "2020-2021",
-      title: "12th Grade",
+      title: "Higher Secondary (Class XII)",
       place: "Dream International School",
-      detail: "89% | JEE: 93 Percentile",
+      detail: "89% | JEE Main: 93.5 Percentile",
     },
   ];
 
@@ -145,11 +145,7 @@ function HomeContent() {
                   </h1>
                 </div>
                 <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
-                  Computer Engineering graduate &amp; Software Engineer at{" "}
-                  <span className="font-semibold text-sky-600 dark:text-sky-400">
-                    Silvertouch Technology
-                  </span>
-                  . Crafting elegant solutions with code.
+                  AI/ML &amp; Full-Stack Engineer. Architecting production GenAI platforms, natural-language-to-SQL engines &amp; autonomous agent frameworks.
                 </p>
                 <div className="mt-10 flex flex-wrap justify-start gap-4">
                   <button

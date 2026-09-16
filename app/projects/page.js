@@ -5,31 +5,32 @@ import Image from "next/image";
 
 const projects = [
   {
-    title: 'Aerobatch (IDP-4)',
-    description: 'An On-Premises Intelligent Document Processing & Field Extraction platform. Built for high-concurrency extraction of structured data from complex industrial documents. Features live page-by-page incremental processing, bidirectional canvas hit-testing, and hallucination zeroing with confidence fusion.',
-    category: 'AI & ML',
-    tags: ['Python', 'OCR', 'vLLM']
+    title: 'OmniQuery',
+    description: 'An enterprise Natural-Language-to-SQL RAG platform featuring DDL column-value grounding, strict dual-layer RBAC, and role-partitioned Qdrant vector collections for multi-tenant schema isolation.',
+    link2: 'https://github.com/ANGELKORADIYA/OMNIQUERY',
+    category: 'RAG & GenAI',
+    tags: ['TypeScript', 'FastAPI', 'Qdrant', 'RAG', 'PostgreSQL']
   },
   {
     title: 'IndexForge',
-    description: 'A local-first semantic search engine entirely offline and built in Rust. Features 3 parallel search arms (Exact Keyword, Fuzzy Match, Semantic Intent) and multi-modal data support for notes, codebases, Wikipedia, and PDFs. Includes a full-stack Web UI and RAG integration.',
+    description: 'A local-first hybrid search engine in Rust combining BM25 keyword matching, trigram fuzzy search, and HNSW semantic vector retrieval with Reciprocal Rank Fusion (RRF, k=60) and sub-10ms p50 latency across 500K+ chunks.',
+    link: 'https://github.com/ANGELKORADIYA/IndexForge',
     link2: 'https://github.com/ANGELKORADIYA/IndexForge',
-    category: 'Systems & Tools',
-    tags: ['Rust', 'React', 'Search']
+    category: 'Systems & Search',
+    tags: ['Rust', 'Axum', 'Tantivy', 'pgvector', 'Tree-sitter']
+  },
+  {
+    title: 'Aerobatch',
+    description: 'An on-premises intelligent document processing & field extraction platform processing 100+ page specifications at 2 pages/min on CPU using PaddleOCR, Celery, FastAPI, and vLLM with confidence fusion.',
+    category: 'Document AI',
+    tags: ['Python', 'PaddleOCR', 'vLLM', 'FastAPI', 'Celery']
   },
   {
     title: 'Reel Mind',
-    description: 'A modern, full-stack automation bridge that monitors Instagram interactions to trigger automated reel capture and AI categorization. Features a DM-based signup workflow and a premium React dashboard for live monitoring of saved reels categorized by topic using AI.',
+    description: 'A modern, full-stack automation bridge that monitors Instagram interactions to trigger automated reel capture and AI categorization. Features a DM-based signup workflow and a premium React dashboard for live monitoring.',
     link: 'https://reel-mind.angelkoradiya.in/',
     category: 'Web Apps',
-    tags: ['Python', 'FastAPI', 'React']
-  },
-  {
-    title: 'OmniQuery',
-    description: 'An advanced Talk2DB platform that converts Natural Language to SQL using a RAG (Retrieval-Augmented Generation) architecture. It features strict RBAC, modular provider interfaces, and dynamic workflow execution for seamless database interaction.',
-    link2: 'https://github.com/ANGELKORADIYA/OMNIQUERY',
-    category: 'RAG',
-    tags: ['TypeScript', 'RAG', 'SQL', 'GenAI']
+    tags: ['Python', 'FastAPI', 'React', 'SQLite']
   },
 // ... (projects data remains the same)
   {
